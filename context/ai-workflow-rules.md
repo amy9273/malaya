@@ -17,13 +17,13 @@ These rules govern how AI coding agents must operate while building and maintain
 - **One Unit at a Time**: Work on a single, isolated unit per cycle. Complete and verify it before moving to the next.
 - **Explicit Consent Before Proceeding**: Never automatically proceed to the next unit without explicit user consent. Complete, test, and present the current unit's deliverables, and wait for the user to approve moving forward.
 - **Always Sync Upstream First**:
-  * Before starting any new unit, ensure local `main` matches `origin/main` (`git fetch origin main && git pull origin main`).
-  * Branch from updated `main` (`git checkout -b feat/unit-NN-description origin/main`).
+  - Before starting any new unit, ensure local `main` matches `origin/main` (`git fetch origin main && git pull origin main`).
+  - Branch from updated `main` (`git checkout -b feat/unit-NN-description origin/main`).
 - **Never commit to `main`**: AI agents must **NEVER** commit or push directly to `main`. All work must be isolated on a feature branch.
 - **Never bypass errors**: If a TypeScript or compilation error occurs, fix the root cause. Never cast to `any` or suppress linter errors with `@ts-ignore`.
 - **Keep Documentation in Sync**:
-  * Update `context/progress-tracker.md` when starting and finishing a unit.
-  * If a technical or architectural decision evolves during implementation, update the relevant context files immediately.
+  - Update `context/progress-tracker.md` when starting and finishing a unit.
+  - If a technical or architectural decision evolves during implementation, update the relevant context files immediately.
 
 ---
 

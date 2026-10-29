@@ -1,4 +1,3 @@
-
 # Malaya
 
 **Mobile-First Webtoon & Manhwa Reading Operating System (PWA)**  
@@ -13,12 +12,11 @@ _An open-source, high-performance webtoon reader with continuous vertical stream
 
 [Project Overview](./context/project-overview.md) • [Architecture](./context/architecture.md) • [Security Guide](./context/security-best-practices.md) • [UI Tokens](./context/ui-context.md) • [Build Plan](./context/specs/00-build-plan.md)
 
-
 ---
 
 ## 🎯 Executive Summary
 
-**Malaya** (Tagalog for *"Free"* / *"Unbounded"*) is an open-source, mobile-first manhwa reading Progressive Web Application (PWA). Built to eliminate the clunky desktop layouts, intrusive popups, and 3px vertical image gap issues common to generic manga readers, Malaya delivers a seamless, native-grade webtoon experience directly in the mobile browser.
+**Malaya** (Tagalog for _"Free"_ / _"Unbounded"_) is an open-source, mobile-first manhwa reading Progressive Web Application (PWA). Built to eliminate the clunky desktop layouts, intrusive popups, and 3px vertical image gap issues common to generic manga readers, Malaya delivers a seamless, native-grade webtoon experience directly in the mobile browser.
 
 Built strictly adhering to the **Seven-File Context Methodology**, Malaya demonstrates clean architecture, hardened SSRF defense, atomic reading progress synchronization, and zero-gap GPU-accelerated continuous vertical scrolling.
 
@@ -26,7 +24,7 @@ Built strictly adhering to the **Seven-File Context Methodology**, Malaya demons
 
 ## ✨ Key Features
 
-- **📱 Standalone Mobile PWA**: Tap *"Add to Home Screen"* on iOS or Android to launch full-screen with zero browser URL bar or bottom navigation chrome.
+- **📱 Standalone Mobile PWA**: Tap _"Add to Home Screen"_ on iOS or Android to launch full-screen with zero browser URL bar or bottom navigation chrome.
 - **📜 Zero-Gap Continuous Vertical Reader**: Renders manhwa panels as a single seamless strip with GPU-accelerated CSS and debounced lazy loading.
 - **👆 3-Tier Mobile Touch Ergonomics**:
   - Center 30% screen tap toggles floating controls dock.

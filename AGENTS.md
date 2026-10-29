@@ -14,6 +14,7 @@ Consult and adhere to the context documentation in the following sequence:
 8. `context/progress-tracker.md` — Current milestone, completed units, test records.
 
 ### Imperative Directives
+
 - **Zero Secrets**: Never stage, commit, or push `.env` files or hardcoded credentials.
 - **Spec-Driven**: Never write code without reading the active unit specification in `context/specs/`.
 - **One Unit at a Time**: Complete, verify, and await explicit user approval before advancing.
