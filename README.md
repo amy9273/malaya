@@ -1,6 +1,5 @@
-<div align="center">
 
-# 📖 Malaya
+# Malaya
 
 **Mobile-First Webtoon & Manhwa Reading Operating System (PWA)**  
 _An open-source, high-performance webtoon reader with continuous vertical streaming, MangaDex API integration, and cloud progress sync._
@@ -14,7 +13,6 @@ _An open-source, high-performance webtoon reader with continuous vertical stream
 
 [Project Overview](./context/project-overview.md) • [Architecture](./context/architecture.md) • [Security Guide](./context/security-best-practices.md) • [UI Tokens](./context/ui-context.md) • [Build Plan](./context/specs/00-build-plan.md)
 
-</div>
 
 ---
 
