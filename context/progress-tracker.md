@@ -1,6 +1,6 @@
 # Progress Tracker — Malaya
 
-## Current Status: Unit 01 Complete (Next.js 15 PWA Scaffold & Theme Configuration)
+## Current Status: Unit 02 Complete (Hardened Image Proxy & SSRF Defense)
 
 ---
 
@@ -10,7 +10,7 @@
 | :---------------------------------------------------- | :----------------------------------------------------------------------------------------------- | :---------- |
 | **Unit 00: Specs, Security & Architecture Blueprint** | Context documentation, security best practices, hardened gitignore, initial repo push            | ✅ Complete |
 | **Unit 01: Next.js 15 PWA Scaffold & Theme**          | Next.js 15 App Router, Tailwind CSS, OLED theme tokens, PWA manifest, CI scripts                 | ✅ Complete |
-| **Unit 02: Hardened Image Proxy & SSRF Defense**      | Secure `/api/proxy-image` route handler with private IP blocking and domain whitelisting         | ⏳ Pending  |
+| **Unit 02: Hardened Image Proxy & SSRF Defense**      | Secure `/api/proxy-image` route handler with private IP blocking and domain whitelisting         | ✅ Complete |
 | **Unit 03: MangaDex API Client & Type Definitions**   | Typed REST client for 8,800+ Korean manhwa catalog, search, and chapter streaming                | ⏳ Pending  |
 | **Unit 04: Catalog & Discovery UI**                   | Trending carousel, paginated manhwa cards, genre chips, 4-state UI loading skeletons             | ⏳ Pending  |
 | **Unit 05: Series Detail & Chapter Index**            | Series banner, synopsis, tags, author/artist credits, sortable chapter list with asc/desc toggle | ⏳ Pending  |
@@ -26,28 +26,33 @@
 
 ### Recent Changes
 
-- **Unit 01: Next.js 15 PWA Scaffold & Theme Configuration**:
-  - Implemented unit spec `context/specs/01-nextjs-pwa-scaffold.md`.
-  - Configured Next.js 15 (App Router, React 19, TypeScript 5.7+) with strict typecheck rules.
-  - Setup Tailwind CSS 3.4+ with OLED Obsidian theme tokens from `context/ui-context.md` (`surface-canvas`, `surface-card`, `surface-elevated`, `surface-border`, `brand-primary`, and semantic status badges).
-  - Configured standalone PWA manifest (`src/app/manifest.ts`) and mobile viewport metadata (`viewport-fit=cover`, theme color `#08090C`).
-  - Added CSS utilities for zero-gap webtoon strip rendering (`.webtoon-strip`, `touch-action: pan-y`) and mobile safe area insets.
-  - Built core 4-State UI primitives:
-    - `Skeleton` (`src/components/ui/skeleton.tsx`) with pulse shimmer.
-    - `EmptyState` (`src/components/ui/empty-state.tsx`) with customizable icon, description, and primary CTA.
-    - `ErrorState` (`src/components/ui/error-state.tsx`) with alert badge and retry action.
-  - Built mobile app shell components:
-    - `AppHeader` (`src/components/layout/app-header.tsx`) with backdrop blur and search/library actions.
-    - `BottomNav` (`src/components/layout/bottom-nav.tsx`) with 4-tab mobile dock (Discover, Search, Library, Settings), automatically hidden in reader mode.
-  - Hardened security headers in `next.config.mjs` (`X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, HSTS, Referrer-Policy).
+- **Unit 02: Hardened Image Proxy & SSRF Defense (`/api/proxy-image`)**:
+  - Implemented unit spec `context/specs/02-security-image-proxy.md`.
+  - Built SSRF defense validator in `src/lib/security/ssrf-validator.ts`:
+    - Protocol enforcement: strictly `https:`.
+    - Hostname blocklist: `localhost`, `127.0.0.1`, `0.0.0.0`, `::1`, `169.254.169.254` (cloud instance metadata).
+    - Numeric IP blocking: rejects direct IPv4 and IPv6 hostnames.
+    - Whitelist validation: `uploads.mangadex.org`, `*.mangadex.org`, `*.mangadex.network`.
+    - MIME-type validation: allows `image/jpeg`, `image/png`, `image/webp`, `image/avif`; strictly blocks `image/svg+xml` (preventing Stored XSS) and non-images.
+    - Non-standard port rejection (only standard HTTPS port 443 permitted).
+  - Built Route Handler in `src/app/api/proxy-image/route.ts`:
+    - Strict SSRF input validation.
+    - 10-second timeout with `AbortSignal.timeout(10000)`.
+    - Upstream `Referer` and `User-Agent` headers.
+    - 15MB payload size protection.
+    - Caching headers: `public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400`.
+    - Security header: `X-Content-Type-Options: nosniff`.
+  - Authored automated security test suite in `src/lib/security/__tests__/ssrf-validator.test.ts`:
+    - 14/14 security and protocol tests passing (100% pass rate).
   - Executed and passed the complete verification loop:
     - `npm run format:check`: 100% Prettier compliant.
     - `npm run typecheck`: 0 TypeScript compiler errors.
     - `npm run lint`: 0 ESLint warnings or errors.
-    - `npm run build`: Production Next.js build compiled successfully in 3.9s.
+    - `npm test`: 14 tests passing across 4 test suites.
+    - `npm run build`: Next.js production build compiled cleanly in 4.0s.
 
 ---
 
 ### Next Step
 
-- Await user approval to merge `feat/unit-01-nextjs-pwa-scaffold` and proceed to **Unit 02: Hardened Image Proxy & SSRF Defense (`/api/proxy-image`)**.
+- Await user approval to merge `feat/unit-02-hardened-image-proxy` and proceed to **Unit 03: MangaDex API Client & Type Definitions**.
