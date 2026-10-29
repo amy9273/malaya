@@ -1,4 +1,3 @@
-
 # Malaya
 
 **Mobile-First Webtoon & Manhwa Reading Operating System (PWA)**  
@@ -12,7 +11,6 @@ _An open-source, high-performance webtoon reader with continuous vertical stream
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [Project Overview](./context/project-overview.md) • [Architecture](./context/architecture.md) • [Security Guide](./context/security-best-practices.md) • [UI Tokens](./context/ui-context.md) • [Build Plan](./context/specs/00-build-plan.md)
-
 
 ---
 
