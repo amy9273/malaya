@@ -18,10 +18,10 @@ This document governs the coding conventions, TypeScript strictness, and automat
 ## 2. TypeScript Strictness & Type Safety Rules
 
 1. **Zero `any` Policy**:
-   * Never use `any`. Use `unknown` with runtime type narrowing (Zod, `typeof`, `instanceof`) or define concrete TypeScript interfaces.
+   - Never use `any`. Use `unknown` with runtime type narrowing (Zod, `typeof`, `instanceof`) or define concrete TypeScript interfaces.
 2. **Mandatory Non-Null Guards**:
-   * Never use non-null assertions (`!`).
-   * When fetching from arrays or nullable database queries, place an explicit guard immediately after the fetch:
+   - Never use non-null assertions (`!`).
+   - When fetching from arrays or nullable database queries, place an explicit guard immediately after the fetch:
      ```typescript
      const entry = await prisma.libraryEntry.findUnique({ where: { id } });
      if (!entry) {
@@ -29,21 +29,21 @@ This document governs the coding conventions, TypeScript strictness, and automat
      }
      ```
 3. **Explicit Callback Typing (TS7006 Prevention)**:
-   * Always provide explicit parameter types for lambda functions inside `.map()`, `.filter()`, and `.reduce()` to ensure zero inference errors regardless of IDE language server state.
+   - Always provide explicit parameter types for lambda functions inside `.map()`, `.filter()`, and `.reduce()` to ensure zero inference errors regardless of IDE language server state.
 4. **Prisma Type Isolation**:
-   * Use `Prisma.<Model>GetPayload<{ include: { ... } }>` to generate explicit types for complex query results.
+   - Use `Prisma.<Model>GetPayload<{ include: { ... } }>` to generate explicit types for complex query results.
 
 ---
 
 ## 3. Server vs. Client Component Boundaries
 
 1. **Default to Server Components**:
-   * Every page, layout, and catalog listing must be a React Server Component by default.
+   - Every page, layout, and catalog listing must be a React Server Component by default.
 2. **Isolate `"use client"` to Leaves**:
-   * Only mark interactive leaf components with `"use client"` (e.g. Reader viewport, Theme toggle, Library status dropdown, Search input).
-   * Never place `"use client"` at the top of a page route unless strictly required.
+   - Only mark interactive leaf components with `"use client"` (e.g. Reader viewport, Theme toggle, Library status dropdown, Search input).
+   - Never place `"use client"` at the top of a page route unless strictly required.
 3. **No Secret Props Passing**:
-   * Never pass server environment variables or raw database connection objects into Client Component props.
+   - Never pass server environment variables or raw database connection objects into Client Component props.
 
 ---
 

@@ -48,26 +48,32 @@ Malaya is architected as a full-stack, cloud-native Next.js 15 application utili
 Every pull request and code modification must satisfy the following 6 invariants:
 
 ### Invariant 1: SSRF & Network Isolation
-* The `/api/proxy-image` route handler must never fetch from any host that resolves to loopback (`127.0.0.0/8`), private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local metadata (`169.254.169.254`), or IPv6 equivalents.
-* All incoming proxy URLs must use `https:` and match whitelisted CDN hostname patterns.
+
+- The `/api/proxy-image` route handler must never fetch from any host that resolves to loopback (`127.0.0.0/8`), private subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local metadata (`169.254.169.254`), or IPv6 equivalents.
+- All incoming proxy URLs must use `https:` and match whitelisted CDN hostname patterns.
 
 ### Invariant 2: Zero Floating Gap Rendering
-* Webtoon vertical strips must never suffer from default inline image gaps. All image elements in the reader must be styled with `display: block`, zero padding, zero margin, and container line-height set to 0.
+
+- Webtoon vertical strips must never suffer from default inline image gaps. All image elements in the reader must be styled with `display: block`, zero padding, zero margin, and container line-height set to 0.
 
 ### Invariant 3: Debounced Progress Throttling
-* Reading progress updates must be debounced by a minimum of **1,500ms** on the client before dispatching to the database.
-* The client must never fire a database mutation on every scroll pixel event.
+
+- Reading progress updates must be debounced by a minimum of **1,500ms** on the client before dispatching to the database.
+- The client must never fire a database mutation on every scroll pixel event.
 
 ### Invariant 4: Row-Level Security Isolation
-* Users can only read, insert, update, or delete their own `LibraryEntry`, `ReadingHistory`, and `Bookmark` records.
-* Every database table must enforce PostgreSQL RLS policies keyed to `auth.uid() = user_id`.
+
+- Users can only read, insert, update, or delete their own `LibraryEntry`, `ReadingHistory`, and `Bookmark` records.
+- Every database table must enforce PostgreSQL RLS policies keyed to `auth.uid() = user_id`.
 
 ### Invariant 5: Secret Isolation Boundary
-* No server secret (e.g. `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`) may be exposed to the browser or prefixed with `NEXT_PUBLIC_`.
-* Secret leakage in code or git commits is a catastrophic build failure.
+
+- No server secret (e.g. `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`) may be exposed to the browser or prefixed with `NEXT_PUBLIC_`.
+- Secret leakage in code or git commits is a catastrophic build failure.
 
 ### Invariant 6: 4-State UI Completeness
-* Every data-fetching screen or widget must implement all four UI states: **Skeleton Loading**, **Empty State**, **Error with Retry**, and **Populated View**.
+
+- Every data-fetching screen or widget must implement all four UI states: **Skeleton Loading**, **Empty State**, **Error with Retry**, and **Populated View**.
 
 ---
 
@@ -145,11 +151,12 @@ model ReadingHistory {
 ## 4. Key Request Flows
 
 ### 4.1 Chapter Reading Flow
+
 1. Client requests `/read/[chapterId]`.
 2. Server Component fetches chapter panel metadata from MangaDex API:
-   * `GET https://api.mangadex.org/at-home/server/{chapterId}`
-   * Returns base CDN node URL and page filename hashes.
+   - `GET https://api.mangadex.org/at-home/server/{chapterId}`
+   - Returns base CDN node URL and page filename hashes.
 3. Next.js generates panel image URLs routed through the secure proxy:
-   * `/api/proxy-image?url=${encodeURIComponent(pageUrl)}`
+   - `/api/proxy-image?url=${encodeURIComponent(pageUrl)}`
 4. Client renders vertical continuous strip with lazy loading and intersection observer.
 5. Client debounces scroll position and syncs reading progress to Supabase.
