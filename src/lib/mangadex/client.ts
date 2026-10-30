@@ -10,6 +10,8 @@ import type {
   ManhwaDetail,
   ChapterItem,
   ChapterPagesPayload,
+  ChapterReaderContext,
+  ChapterNavRef,
 } from './types';
 import {
   normalizeManhwaSummary,
@@ -223,5 +225,90 @@ export async function getChapterPages(chapterId: string): Promise<ChapterPagesPa
     chapterNumber: chapterData.data.attributes.chapter || '0',
     title: chapterData.data.attributes.title || null,
     pages,
+  };
+}
+
+/**
+ * Fetches full reader context: panel pages, series identity,
+ * and adjacent navigation references (previous & next chapters).
+ */
+export async function getChapterContext(
+  chapterId: string,
+): Promise<ChapterReaderContext> {
+  const atHomeEndpoint = `/at-home/server/${chapterId}`;
+  const chapterEndpoint = `/chapter/${chapterId}?includes[]=manga`;
+
+  const [atHomeData, chapterData] = await Promise.all([
+    fetchMangaDex<MangaDexAtHomeResponse>(atHomeEndpoint),
+    fetchMangaDex<MangaDexResponse<MangaDexChapter>>(chapterEndpoint),
+  ]);
+
+  const baseUrl = atHomeData.baseUrl;
+  const hash = atHomeData.chapter.hash;
+  const files = atHomeData.chapter.data;
+  const fallbackFiles = atHomeData.chapter.dataSaver;
+
+  const pages = files.map((fileName, idx) => {
+    const rawUrl = `${baseUrl}/data/${hash}/${fileName}`;
+    const fallbackRawUrl = fallbackFiles[idx]
+      ? `${baseUrl}/data-saver/${hash}/${fallbackFiles[idx]}`
+      : rawUrl;
+
+    return {
+      pageNumber: idx + 1,
+      url: `/api/proxy-image?url=${encodeURIComponent(rawUrl)}`,
+      fallbackUrl: `/api/proxy-image?url=${encodeURIComponent(fallbackRawUrl)}`,
+    };
+  });
+
+  const mangaRel = chapterData.data.relationships.find((r) => r.type === 'manga');
+  const mangaId = mangaRel ? mangaRel.id : '';
+
+  const rawTitle = mangaRel?.attributes?.title as Record<string, string> | undefined;
+  const mangaTitle = rawTitle
+    ? rawTitle.en || rawTitle['ko-ro'] || Object.values(rawTitle)[0] || 'Manhwa'
+    : 'Manhwa';
+
+  let prevChapter: ChapterNavRef | null = null;
+  let nextChapter: ChapterNavRef | null = null;
+  let allChapters: ChapterNavRef[] = [];
+
+  if (mangaId) {
+    try {
+      const feed = await getMangaFeed(mangaId, {
+        limit: 500,
+        order: { chapter: 'asc' },
+      });
+
+      allChapters = feed.chapters.map((ch) => ({
+        id: ch.id,
+        chapterNumber: ch.chapterNumber,
+        title: ch.title,
+      }));
+
+      const currentIndex = allChapters.findIndex((ch) => ch.id === chapterId);
+      if (currentIndex > 0) {
+        prevChapter = allChapters[currentIndex - 1] ?? null;
+      }
+      if (currentIndex >= 0 && currentIndex < allChapters.length - 1) {
+        nextChapter = allChapters[currentIndex + 1] ?? null;
+      }
+    } catch {
+      // Graceful degradation if feed request fails; reader continues with page panels
+    }
+  }
+
+  return {
+    chapter: {
+      chapterId,
+      chapterNumber: chapterData.data.attributes.chapter || '0',
+      title: chapterData.data.attributes.title || null,
+      pages,
+    },
+    mangaId,
+    mangaTitle,
+    prevChapter,
+    nextChapter,
+    allChapters,
   };
 }

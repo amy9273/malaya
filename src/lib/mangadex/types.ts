@@ -175,3 +175,18 @@ export interface ChapterPagesPayload {
   title: string | null;
   pages: ChapterPage[];
 }
+
+export interface ChapterNavRef {
+  id: string;
+  chapterNumber: string;
+  title: string | null;
+}
+
+export interface ChapterReaderContext {
+  chapter: ChapterPagesPayload;
+  mangaId: string;
+  mangaTitle: string;
+  prevChapter: ChapterNavRef | null;
+  nextChapter: ChapterNavRef | null;
+  allChapters: ChapterNavRef[];
+}

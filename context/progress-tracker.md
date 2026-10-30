@@ -1,6 +1,6 @@
 # Progress Tracker — Malaya
 
-## Current Status: Unit 05 Complete (Series Detail & Chapter Index)
+## Current Status: Unit 06 Complete (Mobile Webtoon Vertical Reader Engine)
 
 ---
 
@@ -14,7 +14,7 @@
 | **Unit 03: MangaDex API Client & Type Definitions**   | Typed REST client for 8,800+ Korean manhwa catalog, search, and chapter streaming                | ✅ Complete |
 | **Unit 04: Catalog & Discovery UI**                   | Trending carousel, paginated manhwa cards, genre chips, 4-state UI loading skeletons             | ✅ Complete |
 | **Unit 05: Series Detail & Chapter Index**            | Series banner, synopsis, tags, author/artist credits, sortable chapter list with asc/desc toggle | ✅ Complete |
-| **Unit 06: Mobile Webtoon Reader Engine**             | Zero-gap vertical continuous strip, 3-tier mobile tap zones, width controls, fullscreen mode     | ⏳ Pending  |
+| **Unit 06: Mobile Webtoon Reader Engine**             | Zero-gap vertical continuous strip, 3-tier mobile tap zones, width controls, fullscreen mode     | ✅ Complete |
 | **Unit 07: Database Models & Supabase Auth**          | Prisma schema, Supabase Auth integration, RLS policies, connection pooling                       | ⏳ Pending  |
 | **Unit 08: Reading Progress & Auto-Resume**           | Debounced scroll position tracker (1,500ms), auto-resume modal prompt                            | ⏳ Pending  |
 | **Unit 09: Personal Library Dashboard**               | Reading, Completed, Plan to Read, On Hold tabs, user rating, and favorites                       | ⏳ Pending  |
@@ -26,51 +26,35 @@
 
 ### Recent Changes
 
-- **Unit 05: Series Detail & Chapter Index**:
-  - Implemented unit spec `context/specs/05-title-detail-and-chapters.md`.
-  - Built pure date and chapter sorting utilities (`src/lib/detail/formatters.ts`):
-    - `formatPublishDate()`: Robust human-readable date formatter with fallback handling.
-    - `filterAndSortChapters()`: Decimal numerical sorting (`asc` / `desc`) and case-insensitive chapter/title filtering.
-  - Built Series Header component (`src/components/detail/series-header.tsx`):
-    - Ambient blurred cover art backdrop fading smoothly into OLED canvas.
-    - Standardized 3:4 aspect-ratio cover art container.
-    - Breadcrumb navigation back to discovery catalog.
-    - Status badge (`Ongoing`, `Completed`, `On Hiatus`), publication year, and creator credits (Author & Artist).
-    - Responsive "Start Reading" call-to-action button linking directly to Chapter 1.
-  - Built Synopsis & metadata showcase (`src/components/detail/series-info.tsx`):
-    - Expandable description with smooth "Read more / Show less" toggle for long text.
-    - Interactive tag cloud chips and alternative titles list.
-  - Built Interactive Chapter Index (`src/components/detail/chapter-list.tsx`):
-    - Instant client-side ascending (`1 → N`) and descending (`N → 1`) numerical sort toggle.
-    - Quick chapter search/filter input for rapid navigation across 100+ chapter series.
-    - High-contrast list items meeting 52px touch target standards with chapter pills, release dates, and page count indicators.
-    - Automatic external URL badge for off-site licensed chapters (MangaPlus).
-  - Built 4-state UI loading skeletons & route integration (`src/app/manga/[id]/page.tsx`, `loading.tsx`):
-    - Next.js 15 App Router Server Component with dynamic route params resolution (`await props.params`).
-    - Dynamic OpenGraph metadata generation (`generateMetadata`).
-    - Next.js 15 streaming loading shell (`src/app/manga/[id]/loading.tsx`) rendering `DetailSkeleton`.
-    - Graceful `ErrorState` fallback when a title is unavailable or upstream encounters network errors.
-    - Meaningful `EmptyState` when a series has zero English translated chapters available.
-  - Authored automated test suite (`src/components/detail/__tests__/detail.test.ts`):
-    - 9 unit tests covering ISO date formatting, ascending/descending numerical chapter ordering, fractional chapter sorting, and title query matching.
-    - Monorepo test count: **47/47 tests passing across 14 test suites (100% pass rate)**.
+- **Unit 06: Mobile Webtoon Vertical Reader Engine**:
+  - Implemented unit spec `context/specs/06-webtoon-vertical-reader-engine.md` based on usability research (`mobile-reader-floating-dock-ux-research.md`).
+  - Built pure reader utilities (`src/lib/reader/reader-utils.ts`):
+    - `calculateScrollProgress()`: Calculates live scroll progress percentage (0–100%) with bounds clamping and divide-by-zero protection.
+    - `isIntentionalTap()`: Touch delta Euclidean distance check ($\Delta < 8\text{px}$) eliminating tap vs drag collisions.
+    - `isScrollDismissTrigger()`: Auto-dismissal detection triggered when vertical scroll exceeds 40px.
+    - `getReaderWidthClass()`: Responsive canvas width modes (`full`, `standard` 768px, `compact` 576px).
+  - Built reader navigation components:
+    - `ReaderTopBar` (`src/components/reader/reader-top-bar.tsx`): Passive HUD header with back navigation to `/manga/[mangaId]`, series title, chapter pill, width mode cycler, and native Fullscreen toggle (`requestFullscreen`).
+    - `ReaderBottomDock` (`src/components/reader/reader-bottom-dock.tsx`): Floating island dock anchored in natural thumb zone (`bottom-4` + `pb-safe`), Previous Chapter button, live scroll progress pill, chapter drawer toggle, and high-contrast Next Chapter button.
+    - `ChapterDrawer` (`src/components/reader/chapter-drawer.tsx`): Slide-up sheet allowing readers to jump to any chapter without leaving the canvas.
+    - `WebtoonStrip` (`src/components/reader/webtoon-strip.tsx`): Continuous zero-gap vertical image stream using `.webtoon-strip` and `.webtoon-panel` layout rules, per-panel error fallback, and end-of-chapter completion card.
+    - `ReaderContainer` (`src/components/reader/reader-container.tsx`): Coordinates tap vs drag touch gestures, scroll auto-dismissal, width modes, and fullscreen toggling.
+  - Implemented client API and dynamic route integration (`src/app/read/[chapterId]/page.tsx`, `loading.tsx`):
+    - Added `getChapterContext()` in `src/lib/mangadex/client.ts` resolving panel image URLs, adjacent chapter navigation, and series context in parallel.
+    - Streaming loading shell (`src/app/read/[chapterId]/loading.tsx`) rendering `ReaderSkeleton`.
+    - 4-state error and empty handling for missing chapters or failed network requests.
+  - Authored automated test suite (`src/components/reader/__tests__/reader.test.ts`):
+    - 15 unit tests covering scroll progress computation, touch delta tap detection, scroll auto-dismissal triggers, and width class mappings.
+    - Monorepo test count: **62/62 tests passing across 18 test suites (100% pass rate)**.
   - Executed and passed the complete verification loop:
     - `npm run format:check`: 100% Prettier compliant.
     - `npm run typecheck`: 0 TypeScript compiler errors.
     - `npm run lint`: 0 ESLint warnings or errors.
-    - `npm test`: 47 tests passing in 244ms.
-    - `npm run build`: Production Next.js build compiled cleanly with dynamic server-rendered `/manga/[id]` route.
+    - `npm test`: 62 tests passing in 244ms.
+    - `npm run build`: Production Next.js build compiled cleanly with dynamic server-rendered `/read/[chapterId]` route.
 
 ---
 
 ### Next Step
 
-- Await user approval to merge `feat/unit-05-series-detail-and-chapter-index` and proceed to **Unit 06: Mobile Webtoon Vertical Reader Engine (`/read/[chapterId]`)**.
-  - `npm test`: 38 tests passing in 167ms.
-  - `npm run build`: Production Next.js build compiled cleanly with dynamic server-rendered homepage.
-
----
-
-### Next Step
-
-- Await user approval to merge `feat/unit-04-catalog-and-discovery-ui` and proceed to **Unit 05: Series Detail & Chapter Index (`/manga/[id]`)**.
+- Await user approval to merge `feat/unit-06-webtoon-vertical-reader-engine` and proceed to **Unit 07: Database Models & Supabase Auth (`Prisma`, `Auth`, `RLS`)**.
